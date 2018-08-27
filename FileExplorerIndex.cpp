@@ -14,6 +14,8 @@
 #include <string>
 #include <iostream>
 #include <iomanip>
+#include <fstream>
+#include <ctime>
 using namespace std;
 
 #include "MetaData.h"
@@ -31,7 +33,7 @@ string title = "File Explorer";
 static bool isNormalMode = 1; 
 static const int STDIN = 0;
 struct winsize size,currentRC;
-char *currDir = NULL;
+char *currDir = NULL,*startingDirectory = NULL;
 static vector<struct dirent *> fileList;
 static vector<char *> navigationVector;
 
@@ -42,10 +44,55 @@ void showCurrentDirectoryDetails();
 void printAtLast(string message,int restore);
 void GoToPreviousDirectory();
 
+string FromCharacterPointerToString(char * Input)
+{
+	string temp;
+	temp.append(Input);
+	return temp;
+}
+
+string readable_fs(double spaceToConvert) {
+    int i = 0;
+    const char* bits[] = {"B", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"};
+    while (spaceToConvert > 1024) {
+        spaceToConvert /= 1024;
+        i++;
+    }
+	char buf[10];
+    sprintf(buf, "%.*f%s", i, spaceToConvert, bits[i]);
+	string sFileSize; sFileSize.append(buf);
+    return sFileSize;
+}
+
 void ResetCursor()
 {
 	currentRC.ws_row=STARTTINGROW;
 	currentRC.ws_col=1;
+}
+
+string PrintTime()
+{
+   	time_t now = time(0);   
+   	// convert now to string form
+   	char* dt = ctime(&now);
+	string strDateTime; strDateTime.append(dt);
+	return strDateTime;
+}
+
+ofstream myfile;
+
+void writeToFile(string message)
+{
+  	myfile.open("test.txt", std::ios_base::app);
+  	string strFinalLog;
+  	strFinalLog = PrintTime();
+  	strFinalLog.append("(");
+	strFinalLog.append(to_string(currentRC.ws_row));
+	strFinalLog.append(",");
+	strFinalLog.append(to_string(currentRC.ws_col));
+  	strFinalLog.append(")");
+  	myfile << strFinalLog << " : " << message << endl;
+  	myfile.close();
 }
 
 void SetHeaderPath(char * currDir)
@@ -54,9 +101,8 @@ void SetHeaderPath(char * currDir)
 	if(currDir!=NULL)
 	{
 		if(xdiraccess(currDir))
-		{
+		{		
 			printf("DIR : %s\n\n",currDir);
-			navigationVector.push_back(currDir);
 			ResetCursor();
 		}
 	}
@@ -79,23 +125,31 @@ void SetWelcomeScreen()
 		}
 		printf("\n");	
 		if(currDir==NULL)
+		{
 			currDir = getenv("PWD");
+			startingDirectory = currDir;
+			navigationVector.push_back(currDir);
+		}
 		SetHeaderPath(currDir);
 }
 
 void printAtLast(string message,int restore)
 {
+	
 	if(restore)
 	{
 		int rowI = currentRC.ws_row;
 		int colI = currentRC.ws_col;
-		SetCursor(size.ws_row-1,1);	
+		SetCursor(size.ws_row-2,1);	
 		cout << message;
 		SetCursor(rowI,colI);	
 		return; 
 	}
-	SetCursor(size.ws_row-1,1);	
-	cout << message;
+	else
+	{
+		SetCursor(size.ws_row-1,1);	
+		cout << message;
+	}	
 }
 
 
@@ -107,10 +161,6 @@ static int xdiraccess(const char *path)
 		printAtLast("Directory doea not have Access to Open",1);
 		return 0;
 	}
-	else
-	{
-		printAtLast("Directory have Access to Open ",1);
-	}
 	closedir(dirp);
 	return 1;
 }
@@ -118,7 +168,7 @@ static int xdiraccess(const char *path)
 void GetCurrentDirectoryDetails(char * currDir)
 {
 	printAtLast("AAAA",1);
-	ResetCursor();
+	//ResetCursor();
 	if(currDir!=NULL)
 	{
 		fileList.clear();
@@ -133,15 +183,17 @@ void GetCurrentDirectoryDetails(char * currDir)
 		{
 			struct entry *temp = (struct entry *)malloc(sizeof(struct entry *));			
 			while((deptr = readdir(dp)) != NULL){
-				fileList.push_back(deptr);
+				char * name = deptr->d_name;
+				string strTemp; strTemp.append(name);
+				//if(strTemp.length()==1 && strTemp[0]=='.') continue;
+					fileList.push_back(deptr);
 			}
 			showCurrentDirectoryDetails();
 		}
 	}
 }
 
-void showCurrentDirectoryDetails()
-{
+void showCurrentDirectoryDetails(){
 	/*
 	i.	File Name
 	ii. File size (Human readable format similar to ls -lh)
@@ -149,8 +201,9 @@ void showCurrentDirectoryDetails()
 	iv. Last modified
 	*/
 	string s ="";
-	// Make Header 
-	SetCursor(currentRC.ws_row,2);
+	// Make Header
+	currentRC.ws_col = 3; 
+	SetCursor(currentRC.ws_row,currentRC.ws_col);
 	s = "File Name"; s.append(28 - s.length(), ' '); cout << s ;
 	s = "File Size"; s.append(20 - s.length(), ' '); cout << s ;
 	s = "OwnerShip"; s.append(20 - s.length(), ' '); cout << s ;
@@ -172,7 +225,7 @@ void showCurrentDirectoryDetails()
 		if(!isFile)
 			cout << ">";
 			
-		SetCursor(currentRC.ws_row,2);
+		SetCursor(currentRC.ws_row,currentRC.ws_col);
 		cout << deptr->d_name;
 		
 		string ownerdetails = "";
@@ -188,7 +241,10 @@ void showCurrentDirectoryDetails()
 		ownerdetails += ((filestat.st_mode & S_IWOTH )? "w":"-");
 		ownerdetails += ((filestat.st_mode & S_IXOTH )? "x":"-");
 		
-		SetCursor(currentRC.ws_row,30); cout << filestat.st_size;
+		string fileSize;
+		fileSize = readable_fs((double)filestat.st_size);
+
+		SetCursor(currentRC.ws_row,30); cout << fileSize;
 		SetCursor(currentRC.ws_row,50); cout <<  ownerdetails;
 		SetCursor(currentRC.ws_row,70); cout << ctime(&filestat.st_mtime) << endl;
 
@@ -203,13 +259,19 @@ void redraw(int mainCalling)
 {
 	if(mainCalling)
 		ClearScreen();
-	printAtLast(" REDRAW ---- ",1);
+	//printAtLast(" REDRAW ---- ",1);
 	ioctl(STDOUT_FILENO,TIOCGWINSZ,&size);	
 
 	
 	if(!navigationVector.empty())
+	{
+		printAtLast("Vector is Not Empty",1);
 		currDir = navigationVector.back();
-	
+	}
+	else
+	{
+		printAtLast("Vector is Empty",1);
+	}
 	//if(!xdiraccess(currDir))
 	//	return;
 	
@@ -257,28 +319,34 @@ void CursorFunctionality()
 			cursorright--;			
 			GoToNextDirectory(rowI-STARTTINGROWDATA);
 			//currentRC.ws_col = cursorleft;
+			SetCursor(rowI,colI);
         }
         if ( ch == ARROWLEFT) {
             printf ( "\033[D");//cursor left
 			cursorleft--;
 			cursorright++;
 			GoToPreviousDirectory();
+			SetCursor(rowI,colI);
 			//currentRC.ws_col = cursorleft;
         }
         if ( ch == ARROWDOWN) {
 				printf ( "\033[B");//cursor down
 				currentRC.ws_row++; 
+				
 			//}
         }
 		if ( ch == '\n') {
-			printAtLast("" + to_string(currentRC.ws_row),1);
+			writeToFile("&&&& " + to_string(currentRC.ws_row));
 		}
 		if ( ch == ':') {
 			isNormalMode = 0;
 			printf (":");
 		}
-		
-		
+		if ( ch == 'h' || ch == 'H') {
+			currDir = startingDirectory;
+			navigationVector.push_back(currDir);
+			redraw(1);
+		}
 	}
 	
 	if ( ch == 'q') {
@@ -300,10 +368,6 @@ char * GetPreviousDirectoryPath()
 		char * currentDirectory = navigationVector.back();
 		navigationVector.pop_back();
 		char * previousDirectory = navigationVector.back();
-		//navigationVector.pop_back();
-		string test;
-		test.append(currentDirectory);		test.append(previousDirectory);
-		printAtLast(previousDirectory,1);
 		return previousDirectory;
 	}
 }
@@ -316,14 +380,11 @@ void GoToNextDirectory(int index)
 		struct stat filestat;
 		deptr = fileList[index];
 		stat(deptr->d_name, &filestat);
-				
         char * p;
         p = (char *)malloc(strlen(deptr->d_name) + strlen(currDir) + 1 + 1);
         strcpy(p,currDir);
         strcat(p,"/");
         strcat(p,deptr->d_name);
-		//SetHeaderPath(p);
-		//GetCurrentDirectoryDetails(p);
 		navigationVector.push_back(p);
 		redraw(1);
 		free(p);
@@ -334,26 +395,9 @@ void GoToPreviousDirectory()
 {
 	char * prevDir = GetPreviousDirectoryPath();
 	if(prevDir!=NULL)
-	{
-		string strtest;strtest.append(prevDir);
-		printAtLast(strtest,1);
-		/*
-		struct dirent *deptr = NULL;
-		struct stat filestat;
-		deptr = fileList[index];
-		stat(deptr->d_name, &filestat);				
-        char * p;
-        p = (char *)malloc(strlen(deptr->d_name) + strlen(currDir) + 1 + 1);
-        strcpy(p,currDir);
-        strcat(p,"/");
-        strcat(p,deptr->d_name);
-		*/
-		//SetHeaderPath(prevDir);
-		//GetCurrentDirectoryDetails(prevDir);
+	{	
 		redraw(1);
-		//navigationVector.push_back(p);
-		//free(p);
-		printAtLast(strtest.append(":aaaaaa"),1);
 	}
-	else printAtLast("No Previous Directory Exist",1);
+	else 
+		printAtLast("No Previous Directory Exist",1);
 }
