@@ -41,6 +41,8 @@ enum action {
 #define SIZE         30
 #define STARTTINGROW 5
 #define STARTTINGROWDATA 7
+#define MAXIMUMROWNUMBER 34
+
 
 /* Associate a pressed key to an action */
 struct key {

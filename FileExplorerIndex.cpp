@@ -34,8 +34,10 @@ static bool isNormalMode = 1;
 static const int STDIN = 0;
 struct winsize size,currentRC;
 char *currDir = NULL,*startingDirectory = NULL;
+char * UpFolderPath = NULL;
 static vector<struct dirent *> fileList;
 static vector<char *> navigationVector;
+int isScrollingEnabled = 0;
 
 static int xdiraccess(const char *path);
 void CursorFunctionality();
@@ -43,6 +45,9 @@ void GoToNextDirectory(int index);
 void showCurrentDirectoryDetails();
 void printAtLast(string message,int restore);
 void GoToPreviousDirectory();
+void GoToUpFolder();
+int EnableUpScrolling();
+int EnableDownScrolling();
 
 string FromCharacterPointerToString(char * Input)
 {
@@ -133,6 +138,24 @@ void SetWelcomeScreen()
 		SetHeaderPath(currDir);
 }
 
+void SetParentPath(char * currDir)
+{
+	if(currDir!=NULL)
+	{
+		string s1;
+		s1.append(currDir);
+		int location = s1.find_last_of("\\/");
+		if(location>0)
+		{
+		s1 = s1.substr(0, location);
+		s1.append("/");
+		char *cstr = new char[s1.length() + 1];
+		strcpy(cstr, s1.c_str());
+		UpFolderPath = cstr;
+		}
+	}
+}
+
 void printAtLast(string message,int restore)
 {
 	
@@ -140,14 +163,18 @@ void printAtLast(string message,int restore)
 	{
 		int rowI = currentRC.ws_row;
 		int colI = currentRC.ws_col;
-		SetCursor(size.ws_row-2,1);	
+		SetCursor(size.ws_row-2,1);
+		cout << "																				";	
+		SetCursor(size.ws_row-2,1);
 		cout << message;
 		SetCursor(rowI,colI);	
 		return; 
 	}
 	else
 	{
-		SetCursor(size.ws_row-1,1);	
+		SetCursor(size.ws_row-2,1);	
+		cout << "																				";
+		SetCursor(size.ws_row-2,1);
 		cout << message;
 	}	
 }
@@ -165,16 +192,27 @@ static int xdiraccess(const char *path)
 	return 1;
 }
 
+int isFile(struct dirent *deptr)
+{
+	struct stat filestat;
+	int isFile = 0;
+	stat(deptr->d_name, &filestat);
+	if(S_ISREG(filestat.st_mode))
+			isFile = 1;
+	return isFile;
+		
+}
+
 void GetCurrentDirectoryDetails(char * currDir)
 {
-	printAtLast("AAAA",1);
-	//ResetCursor();
 	if(currDir!=NULL)
 	{
 		fileList.clear();
+		SetParentPath(currDir);
 		DIR *dp = opendir((const char*)currDir);
 		struct dirent *deptr = NULL;
 		struct stat filestat;
+
 		if(dp == NULL){
 			printAtLast("Error: Could not open the current working directory",1);
 			ResetCursor();
@@ -183,10 +221,11 @@ void GetCurrentDirectoryDetails(char * currDir)
 		{
 			struct entry *temp = (struct entry *)malloc(sizeof(struct entry *));			
 			while((deptr = readdir(dp)) != NULL){
-				char * name = deptr->d_name;
-				string strTemp; strTemp.append(name);
+				//char * name = deptr->d_name;
+				//string strTemp; strTemp.append(name);
 				//if(strTemp.length()==1 && strTemp[0]=='.') continue;
-					fileList.push_back(deptr);
+				//if(strTemp.length()==2 && strTemp == "..") 
+				fileList.push_back(deptr);
 			}
 			showCurrentDirectoryDetails();
 		}
@@ -201,10 +240,19 @@ void showCurrentDirectoryDetails(){
 	iv. Last modified
 	*/
 	string s ="";
+	
 	// Make Header
 	currentRC.ws_col = 3; 
+	int positionRow = currentRC.ws_row, positionColumn = currentRC.ws_col; 
 	SetCursor(currentRC.ws_row,currentRC.ws_col);
-	s = "File Name"; s.append(28 - s.length(), ' '); cout << s ;
+	
+	for(int i=0;i<size.ws_row && i<=MAXIMUMROWNUMBER;i++)
+	{
+		cout << "																															";
+	}
+	SetCursor(positionRow,positionColumn);
+	
+	s = "File Name"; s.append(38 - s.length(), ' '); cout << s ;
 	s = "File Size"; s.append(20 - s.length(), ' '); cout << s ;
 	s = "OwnerShip"; s.append(20 - s.length(), ' '); cout << s ;
 	s = "Last Modified"; s.append(20 - s.length(), ' '); cout << s << endl;
@@ -244,9 +292,9 @@ void showCurrentDirectoryDetails(){
 		string fileSize;
 		fileSize = readable_fs((double)filestat.st_size);
 
-		SetCursor(currentRC.ws_row,30); cout << fileSize;
-		SetCursor(currentRC.ws_row,50); cout <<  ownerdetails;
-		SetCursor(currentRC.ws_row,70); cout << ctime(&filestat.st_mtime) << endl;
+		SetCursor(currentRC.ws_row,40); cout << fileSize;
+		SetCursor(currentRC.ws_row,60); cout <<  ownerdetails;
+		SetCursor(currentRC.ws_row,80); cout << ctime(&filestat.st_mtime) << endl;
 
 		currentRC.ws_row++;
 	}	
@@ -265,15 +313,8 @@ void redraw(int mainCalling)
 	
 	if(!navigationVector.empty())
 	{
-		printAtLast("Vector is Not Empty",1);
 		currDir = navigationVector.back();
 	}
-	else
-	{
-		printAtLast("Vector is Empty",1);
-	}
-	//if(!xdiraccess(currDir))
-	//	return;
 	
 	SetWelcomeScreen();	
 	GetCurrentDirectoryDetails(currDir);
@@ -308,10 +349,21 @@ void CursorFunctionality()
 	{
 		int rowI = currentRC.ws_row;
 		int colI = currentRC.ws_col;
+		if ( ch == BACKSPACE) 
+		{
+			GoToUpFolder();
+		}
 		if ( ch == ARROWUP) 
 		{
-			printf ( "\033[A");//cursor up
-			currentRC.ws_row--;
+			if((currentRC.ws_row-1)<STARTTINGROWDATA)
+			{
+				printAtLast("Scrooling Need to Be Impleented for Up ",1); 		
+			}
+			else
+			{
+				printf ( "\033[A");//cursor up
+				currentRC.ws_row--;
+			}
         }
         if ( ch == ARROWRIGHT) {
             printf ( "\033[C");//cursor right
@@ -330,13 +382,18 @@ void CursorFunctionality()
 			//currentRC.ws_col = cursorleft;
         }
         if ( ch == ARROWDOWN) {
+			if(currentRC.ws_row>MAXIMUMROWNUMBER)
+			{
+				printAtLast("Scrooling Need to Be Impleented for Down",1); 		
+			}
+			else
+			{
 				printf ( "\033[B");//cursor down
 				currentRC.ws_row++; 
-				
-			//}
+			}
         }
 		if ( ch == '\n') {
-			writeToFile("&&&& " + to_string(currentRC.ws_row));
+			printAtLast(to_string(currentRC.ws_row) + " : " + to_string(currentRC.ws_col),1); 
 		}
 		if ( ch == ':') {
 			isNormalMode = 0;
@@ -351,6 +408,7 @@ void CursorFunctionality()
 	
 	if ( ch == 'q') {
 			printf ( "\033[2J");
+			tcsetattr( STDIN, TCSANOW, &oldattr );
     }
 	
 	tcsetattr( STDIN, TCSANOW, &oldattr );
@@ -379,15 +437,22 @@ void GoToNextDirectory(int index)
 		struct dirent *deptr = NULL;
 		struct stat filestat;
 		deptr = fileList[index];
-		stat(deptr->d_name, &filestat);
-        char * p;
-        p = (char *)malloc(strlen(deptr->d_name) + strlen(currDir) + 1 + 1);
-        strcpy(p,currDir);
-        strcat(p,"/");
-        strcat(p,deptr->d_name);
-		navigationVector.push_back(p);
-		redraw(1);
-		free(p);
+		if(isFile(deptr))
+		{
+			printAtLast("It is File So need to Open in Application",1);
+		}
+		else
+		{
+			stat(deptr->d_name, &filestat);
+			char * p;
+			p = (char *)malloc(strlen(deptr->d_name) + strlen(currDir) + 1 + 1);
+			strcpy(p,currDir);
+			strcat(p,"/");
+			strcat(p,deptr->d_name);
+			navigationVector.push_back(p);
+			redraw(1);
+			free(p);
+		}
 	}
 }
 
@@ -400,4 +465,40 @@ void GoToPreviousDirectory()
 	}
 	else 
 		printAtLast("No Previous Directory Exist",1);
+}
+
+void GoToUpFolder()
+{
+	char * upFolderPath = UpFolderPath;
+	if(upFolderPath!=NULL)
+	{	
+		navigationVector.push_back(upFolderPath);
+		redraw(1);
+	}
+	else 
+		printAtLast("No Up Folder Path Defined",1);
+}
+
+int EnableUpScrolling()
+{
+	if(isNormalMode)
+	{
+		if(currentRC.ws_row>MAXIMUMROWNUMBER)
+		{
+			return 1;
+		}
+	}
+	return 0;
+}
+
+int EnableDownScrolling()
+{
+	if(isNormalMode)
+	{
+		if(currentRC.ws_row<STARTTINGROWDATA)
+		{
+			return 1;
+		}
+	}
+	return 0;
 }
