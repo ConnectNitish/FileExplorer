@@ -42,7 +42,7 @@ int isScrollingEnabled = 0;
 static int xdiraccess(const char *path);
 void CursorFunctionality();
 void GoToNextDirectory(int index);
-void showCurrentDirectoryDetails();
+void showCurrentDirectoryDetails(int,int);
 void printAtLast(string message,int restore);
 void GoToPreviousDirectory();
 void GoToUpFolder();
@@ -72,6 +72,12 @@ string readable_fs(double spaceToConvert) {
 void ResetCursor()
 {
 	currentRC.ws_row=STARTTINGROW;
+	currentRC.ws_col=1;
+}
+
+void ResetCursorToDataRow()
+{
+	currentRC.ws_row=STARTTINGROWDATA;
 	currentRC.ws_col=1;
 }
 
@@ -227,12 +233,13 @@ void GetCurrentDirectoryDetails(char * currDir)
 				//if(strTemp.length()==2 && strTemp == "..") 
 				fileList.push_back(deptr);
 			}
-			showCurrentDirectoryDetails();
+			showCurrentDirectoryDetails(0,MAXIMUMROWNUMBER-STARTTINGROWDATA+1);
 		}
 	}
 }
 
-void showCurrentDirectoryDetails(){
+void showCurrentDirectoryDetails(int startingIndex,int endingIndex){
+	
 	/*
 	i.	File Name
 	ii. File size (Human readable format similar to ls -lh)
@@ -251,7 +258,7 @@ void showCurrentDirectoryDetails(){
 		cout << "																															";
 	}
 	SetCursor(positionRow,positionColumn);
-	
+
 	s = "File Name"; s.append(38 - s.length(), ' '); cout << s ;
 	s = "File Size"; s.append(20 - s.length(), ' '); cout << s ;
 	s = "OwnerShip"; s.append(20 - s.length(), ' '); cout << s ;
@@ -261,7 +268,15 @@ void showCurrentDirectoryDetails(){
 	struct dirent *deptr = NULL;
 	string strHeader = "File Name\t\tFile Size\tOwnerShip\tLast Modified\n";
 	struct stat filestat;
-	for(int i=0;i<fileList.size();i++)
+
+	// limit the End Index to File Size 
+	if(endingIndex>fileList.size())
+	{
+		endingIndex = fileList.size();
+		endingIndex = endingIndex-1;
+	}
+
+	for(int i=startingIndex;i <= endingIndex;i++)
 	{
 		int isFile = 0;
 		deptr = fileList[i];
@@ -384,7 +399,12 @@ void CursorFunctionality()
         if ( ch == ARROWDOWN) {
 			if(currentRC.ws_row>MAXIMUMROWNUMBER)
 			{
-				printAtLast("Scrooling Need to Be Impleented for Down",1); 		
+				printAtLast("Scrooling Need to Be Impleented for Down",1); 
+				currentRC.ws_row++;
+				int startIndex = currentRC.ws_row-MAXIMUMROWNUMBER+1;	
+				int endingIndex = startIndex + MAXIMUMROWNUMBER;
+				showCurrentDirectoryDetails(startIndex,endingIndex);
+				currentRC.ws_row = rowI;	
 			}
 			else
 			{
