@@ -16,6 +16,8 @@
 #include <iomanip>
 #include <fstream>
 #include <ctime>
+#include <algorithm>
+
 using namespace std;
 
 #include "MetaData.h"
@@ -123,7 +125,8 @@ void SetHeaderPath(char * currDir)
 
 void SetWelcomeScreen()
 {
-		SetCursor(1,1);	
+		ClearScreen();
+		SetCursor(0,0);	
 		int mid = size.ws_col/2;
 		//string name = "File Explorer";
 		SetCursor(1,mid-(title.length()/2));
@@ -209,23 +212,24 @@ int isFile(struct dirent *deptr)
 		
 }
 
-void GetCurrentDirectoryDetails(char * currDir)
+void GetCurrentDirectoryDetails(char * currDir,int startIndex,int endingIndex,int isFromSameSource)
 {
 	if(currDir!=NULL)
 	{
-		fileList.clear();
 		SetParentPath(currDir);
 		DIR *dp = opendir((const char*)currDir);
 		struct dirent *deptr = NULL;
 		struct stat filestat;
-
 		if(dp == NULL){
 			printAtLast("Error: Could not open the current working directory",1);
 			ResetCursor();
 		}
 		else
 		{
-			struct entry *temp = (struct entry *)malloc(sizeof(struct entry *));			
+			if(isFromSameSource == 0)
+			{			
+			fileList.clear();
+			//struct entry *temp = (struct entry *)malloc(sizeof(struct entry *));			
 			while((deptr = readdir(dp)) != NULL){
 				//char * name = deptr->d_name;
 				//string strTemp; strTemp.append(name);
@@ -233,7 +237,8 @@ void GetCurrentDirectoryDetails(char * currDir)
 				//if(strTemp.length()==2 && strTemp == "..") 
 				fileList.push_back(deptr);
 			}
-			showCurrentDirectoryDetails(0,MAXIMUMROWNUMBER-STARTTINGROWDATA+1);
+			}
+			showCurrentDirectoryDetails(startIndex,endingIndex);
 		}
 	}
 }
@@ -252,13 +257,6 @@ void showCurrentDirectoryDetails(int startingIndex,int endingIndex){
 	currentRC.ws_col = 3; 
 	int positionRow = currentRC.ws_row, positionColumn = currentRC.ws_col; 
 	SetCursor(currentRC.ws_row,currentRC.ws_col);
-	
-	for(int i=0;i<size.ws_row && i<=MAXIMUMROWNUMBER;i++)
-	{
-		cout << "																															";
-	}
-	SetCursor(positionRow,positionColumn);
-
 	s = "File Name"; s.append(38 - s.length(), ' '); cout << s ;
 	s = "File Size"; s.append(20 - s.length(), ' '); cout << s ;
 	s = "OwnerShip"; s.append(20 - s.length(), ' '); cout << s ;
@@ -318,11 +316,10 @@ void showCurrentDirectoryDetails(int startingIndex,int endingIndex){
 	SetCursor(currentRC.ws_row,currentRC.ws_col);
 }
 
-void redraw(int mainCalling)
+void redraw(int mainCalling,int startIndex,int endingIndex,int isFromSameSource)
 {
 	if(mainCalling)
 		ClearScreen();
-	//printAtLast(" REDRAW ---- ",1);
 	ioctl(STDOUT_FILENO,TIOCGWINSZ,&size);	
 
 	
@@ -332,7 +329,7 @@ void redraw(int mainCalling)
 	}
 	
 	SetWelcomeScreen();	
-	GetCurrentDirectoryDetails(currDir);
+	GetCurrentDirectoryDetails(currDir,startIndex,endingIndex,isFromSameSource);
 	
 	ResetCursor();
 	currentRC.ws_row = currentRC.ws_row+2 ;
@@ -344,7 +341,7 @@ void redraw(int mainCalling)
 
 int main()
 {	
-	redraw(1);	
+	redraw(1,0,MAXIMUMROWNUMBER-STARTTINGROWDATA+1,0);	
 	return 0;
 }
 
@@ -359,8 +356,11 @@ void CursorFunctionality()
     tcsetattr( STDIN, TCSANOW, &newattr );
     setbuf(stdin, NULL);
 	int cursorright =COLUMNWIDTH,cursorleft =1;
+	NormalMode :
+	//ch = getchar();
+	string str(1,ch);
 	
-	while ( ( ch = getchar ()) != 'q') 
+	while ( (((ch = getchar()) != 'q') && (ch!='Q')) && isNormalMode == 1) 
 	{
 		int rowI = currentRC.ws_row;
 		int colI = currentRC.ws_col;
@@ -402,9 +402,9 @@ void CursorFunctionality()
 				printAtLast("Scrooling Need to Be Impleented for Down",1); 
 				currentRC.ws_row++;
 				int startIndex = currentRC.ws_row-MAXIMUMROWNUMBER+1;	
-				int endingIndex = startIndex + MAXIMUMROWNUMBER;
-				showCurrentDirectoryDetails(startIndex,endingIndex);
-				currentRC.ws_row = rowI;	
+				int endingIndex = startIndex + (MAXIMUMROWNUMBER-STARTTINGROWDATA+1);
+				redraw(1,startIndex,endingIndex,1);
+				//currentRC.ws_row = rowI;	
 			}
 			else
 			{
@@ -417,20 +417,52 @@ void CursorFunctionality()
 		}
 		if ( ch == ':') {
 			isNormalMode = 0;
-			printf (":");
+			/**/
+			newattr = oldattr;
+    		newattr.c_lflag &= ( ICANON | ECHO );
+		    tcsetattr( STDIN, TCSANOW, &newattr );
+			writeToFile("Entering INto Command Mode");
+			SetCursor(size.ws_row-3,1); 
+    		printf (":");
 		}
 		if ( ch == 'h' || ch == 'H') {
 			currDir = startingDirectory;
 			navigationVector.push_back(currDir);
-			redraw(1);
+			redraw(1,0,MAXIMUMROWNUMBER-STARTTINGROWDATA+1,0);
 		}
 	}
 	
-	if ( ch == 'q') {
+	if((ch == 'q' || ch == 'Q') && isNormalMode == 1)
+	{
+			writeToFile("Going In Normal Mode Quit");
 			printf ( "\033[2J");
 			tcsetattr( STDIN, TCSANOW, &oldattr );
+			return;
+			//exit(0);
     }
-	
+	//ch = getchar();
+	while (((ch = getchar()) != 'q' && (ch != 'Q'))  && isNormalMode == 0) 
+	{
+		if(ch == ESC)
+		{
+			newattr = oldattr;
+    		newattr.c_lflag &= ~( ICANON | ECHO );
+		    tcsetattr( STDIN, TCSANOW, &newattr );
+			isNormalMode=1;
+			ResetCursorToDataRow();
+			goto NormalMode;
+		}
+	}
+
+	if((ch == 'q' || ch == 'Q') && isNormalMode == 0)
+	{
+		writeToFile("Going In Command Mode Quit");
+		printf ( "\033[2J");
+		tcsetattr( STDIN, TCSANOW, &oldattr );
+		exit(0);
+	}
+
+
 	tcsetattr( STDIN, TCSANOW, &oldattr );
 }
 
@@ -470,7 +502,7 @@ void GoToNextDirectory(int index)
 			strcat(p,"/");
 			strcat(p,deptr->d_name);
 			navigationVector.push_back(p);
-			redraw(1);
+			redraw(1,0,MAXIMUMROWNUMBER-STARTTINGROWDATA+1,0);
 			free(p);
 		}
 	}
@@ -481,7 +513,7 @@ void GoToPreviousDirectory()
 	char * prevDir = GetPreviousDirectoryPath();
 	if(prevDir!=NULL)
 	{	
-		redraw(1);
+		redraw(1,0,MAXIMUMROWNUMBER-STARTTINGROWDATA+1,0);
 	}
 	else 
 		printAtLast("No Previous Directory Exist",1);
@@ -493,7 +525,7 @@ void GoToUpFolder()
 	if(upFolderPath!=NULL)
 	{	
 		navigationVector.push_back(upFolderPath);
-		redraw(1);
+		redraw(1,0,MAXIMUMROWNUMBER-STARTTINGROWDATA+1,0);
 	}
 	else 
 		printAtLast("No Up Folder Path Defined",1);
