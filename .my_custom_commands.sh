@@ -5,6 +5,6 @@ function print_my_input() {
   make run
 }
 
-function FE() {  
+function fe() {  
 	make run
 }

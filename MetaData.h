@@ -1,4 +1,7 @@
 /* See LICENSE file for copyright and license details. */
+
+#include "InvokeCommands.h"
+
 #define CONTROL(c) ((c) ^ 0x40)
 
 typedef unsigned long ulong;

@@ -52,6 +52,8 @@ void GoToUpFolder();
 int EnableUpScrolling();
 int EnableDownScrolling();
 void GetCommandLine(string sInput);
+int invokeCommands(string strCommand);
+size_t split(const string &txt, vector<string> &strs, char ch);
 
 static int    terminal_descriptor = -1;
 static struct termios terminal_original;
@@ -71,7 +73,7 @@ static void terminal_done(void)
 
 static int terminal_init(void)
 {
-    struct sigaction act;
+   // struct sigaction act;
  
     /* Already initialized? */
     if (terminal_descriptor != -1)
@@ -264,7 +266,7 @@ void SetWelcomeScreen()
 		SetCursor(0,0);
 		int mid = size.ws_col/2;
 		//string name = "File Explorer";
-		SetCursor(1,mid-(title.length()/2));
+		SetCursor(1,(int)(mid-(title.length()/2)));
 		cout << title;
 		SetCursor(2,mid/2);
 		int totalLength = (mid + (mid/2)) - (mid/2);
@@ -502,7 +504,7 @@ int main()
 
 void CursorFunctionality()
 {
-	struct termios oldattr, newattr;
+	//struct termios oldattr, newattr;
 	int ch = 0;
     //set terminal
 /*    tcgetattr( STDIN, &oldattr );
@@ -513,10 +515,10 @@ void CursorFunctionality()
 */
 	terminal_init();
 	int cursorright =COLUMNWIDTH,cursorleft =1;
-	NormalMode :
+	//NormalMode :
 	//ch = getchar();
 	string str(1,ch);
-	NormalModeStart : 
+	//NormalModeStart : 
 	while ( (((ch = getchar()) != 'q') && (ch!='Q')) && isNormalMode == 1)
 	{
 		int rowI = currentRC.ws_row;
@@ -592,8 +594,8 @@ void CursorFunctionality()
 				if(!(endingIndex>=lastIndexOfFile))
 				{
 					currentRC.ws_row++;
-					writeToFile("File " + to_string(startIndex)+" : "+to_string(endingIndex)
-					+" Last Index Of File  "+to_string(lastIndexOfFile));
+					//writeToFile("File " + to_string(startIndex)+" : "+to_string(endingIndex)
+					//+" Last Index Of File  "+to_string(lastIndexOfFile));
 					redraw(1,startIndex,endingIndex,1);
 				}
 			}
@@ -682,7 +684,7 @@ void CursorFunctionality()
 
 	if((ch == 'q' || ch == 'Q') && isNormalMode == 0)
 	{
-		writeToFile("Going In Command Mode Quit");
+		//writeToFile("Going In Command Mode Quit");
 		printf ( "\033[2J");
 		//tcsetattr( STDIN, TCSANOW, &oldattr );
 		terminal_done();
@@ -707,8 +709,8 @@ void GetCommandLine(string str)
 			//SetCursor(size.ws_row-3,2);
 			string str = "";
   			char ch;
-  			while (ch = getchar()) {
-				  writeToFile(to_string(ch));
+  			while ((ch = getchar())) {
+				 //writeToFile(to_string(ch));
 				if(ch == 10)
 				{
 					isEnterPressed = true;
@@ -752,7 +754,7 @@ void GetCommandLine(string str)
 			  }
 			  writeToFile(str);
 
-			  
+			  invokeCommands(str);
 
 			}while(true);
 }
@@ -870,3 +872,25 @@ int EnableDownScrolling()
 	}
 	return 0;
 }
+
+int invokeCommands(string strCommand)
+{
+	executeCommands(strCommand);
+	return 0;
+
+}
+
+/*
+int executeCommands(string strCommand){
+    
+    vector<string> seperatedSpaceCommands;
+	split(strCommand,seperatedSpaceCommands,' ');
+	for(int i=0;i<seperatedSpaceCommands.size();i++)
+	{
+		writeToFile(seperatedSpaceCommands[i]);
+	}
+    exeRenameCommand(NULL,NULL);
+    return 0;
+}
+*/
+
