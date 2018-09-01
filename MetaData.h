@@ -44,7 +44,7 @@ enum action {
 #define SIZE         30
 #define STARTTINGROW 5
 #define STARTTINGROWDATA 7
-#define MAXIMUMROWNUMBER 33
+#define MAXIMUMROWNUMBER 32
 
 
 /* Associate a pressed key to an action */
@@ -60,3 +60,4 @@ struct assoc {
 	char *regex; /* Regex to match on filename */
 	char *mime;  /* File type */
 };
+

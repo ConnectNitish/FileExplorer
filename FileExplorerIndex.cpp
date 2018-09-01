@@ -20,6 +20,11 @@
 #include <regex>
 #include <signal.h>
 
+#include	<pwd.h>
+#include	<grp.h>
+#include   <string.h>
+#include	<fcntl.h>
+
 using namespace std;
 
 #include "MetaData.h"
@@ -54,6 +59,7 @@ int EnableDownScrolling();
 void GetCommandLine(string sInput);
 int invokeCommands(string strCommand);
 size_t split(const string &txt, vector<string> &strs, char ch);
+void GetCommandLine(string str);
 
 static int    terminal_descriptor = -1;
 static struct termios terminal_original;
@@ -117,7 +123,9 @@ static int terminal_init(void)
     terminal_settings.c_iflag &= ~ISTRIP;
  
     /* Do not do newline translation on input. */
-    terminal_settings.c_iflag &= ~(INLCR | IGNCR | ICRNL);
+    //terminal_settings.c_iflag &= ~(INLCR | IGNCR | ICRNL);
+	// Is For Ignore Enter Key 
+	terminal_settings.c_iflag &= ~(INLCR | IGNCR );
 
  
     /* Use 8-bit characters. This too may affect standard streams,
@@ -404,7 +412,7 @@ void showCurrentDirectoryDetails(int startingIndex,int endingIndex,int isFromSam
 	struct stat filestat;
 
 	// limit the End Index to File Size
-	if(endingIndex>((int)fileList.size()))
+	if(endingIndex>=((int)fileList.size()))
 	{
 		endingIndex = fileList.size();
 		endingIndex = endingIndex-1;
@@ -412,9 +420,9 @@ void showCurrentDirectoryDetails(int startingIndex,int endingIndex,int isFromSam
 
 	GetSetCurrentIndexOfFileList(1,startingIndex);
 	GetSetLastIndexOfFileList(1,endingIndex);
-
 	for(int i=startingIndex;i <= endingIndex;i++)
 	{
+			
 		//int isFile = 0,
 		int isDirectory=0;
 		deptr = fileList[i];
@@ -454,9 +462,9 @@ void showCurrentDirectoryDetails(int startingIndex,int endingIndex,int isFromSam
 		SetCursor(currentRC.ws_row,40); cout << fileSize;
 		SetCursor(currentRC.ws_row,60); cout <<  ownerdetails;
 		SetCursor(currentRC.ws_row,80); cout << ctime(&filestat.st_mtime) << endl;
-
 		currentRC.ws_row++;
 	}
+	
 	if(isFromSameSource==0)
 	{
 			//writeToFile(" Cursor is Reset because found Scrolling is Not Source");
@@ -466,9 +474,10 @@ void showCurrentDirectoryDetails(int startingIndex,int endingIndex,int isFromSam
 	else
 	{
 		currentRC.ws_row--;
+		SetCursor(currentRC.ws_row,currentRC.ws_col);
 		//writeToFile(" Cursor is Not Reset because found Scrolling is Source");
 	}
-	SetCursor(currentRC.ws_row,currentRC.ws_col);
+	
 }
 
 void redraw(int mainCalling,int startIndex,int endingIndex,int isFromSameSource)
@@ -484,8 +493,9 @@ void redraw(int mainCalling,int startIndex,int endingIndex,int isFromSameSource)
 	}
 
 	SetWelcomeScreen();
+	
 	GetCurrentDirectoryDetails(currDir,startIndex,endingIndex,isFromSameSource);
-
+	
 	if(isFromSameSource==0)
 	{
 		ResetCursor();
@@ -498,12 +508,14 @@ void redraw(int mainCalling,int startIndex,int endingIndex,int isFromSameSource)
 
 int main()
 {
+	// 1,0,32-7+1,0
 	redraw(1,0,MAXIMUMROWNUMBER-STARTTINGROWDATA+1,0);
 	return 0;
 }
 
 void CursorFunctionality()
 {
+	
 	//struct termios oldattr, newattr;
 	int ch = 0;
     //set terminal
@@ -561,7 +573,9 @@ void CursorFunctionality()
             printf ( "\033[C");//cursor right
 			cursorleft++;
 			cursorright--;
-			GoToNextDirectory(rowI-STARTTINGROWDATA);
+			//writeToFile(" Index of Array RIGHT ARROW " + 
+			//to_string(rowI-STARTTINGROWDATA+GetSetCurrentIndexOfFileList(0,0)-1));
+			GoToNextDirectory(rowI-STARTTINGROWDATA+GetSetCurrentIndexOfFileList(0,0));
 			//currentRC.ws_col = cursorleft;
 			SetCursor(rowI,colI);
         }
@@ -576,14 +590,18 @@ void CursorFunctionality()
         if ( ch == ARROWDOWN) {
 			if(currentRC.ws_row>MAXIMUMROWNUMBER)
 			{
-				//printAtLast("Scrooling Need to Be Impleented for Down",1);
+				//currentRC.ws_row++;
+				//writeToFile("Scrooling Need to Be Impleented for Down");
 				int currentPositionOfFileIndex = GetSetCurrentIndexOfFileList(0,0);
-				//writeToFile("Scrooling Need to Be Impleented for Down"+
-				//to_string(currentPositionOfFileIndex));
+				writeToFile("Scrooling Need to Be Impleented for Down row : "+to_string(currentRC.ws_row)+" : current " +
+				to_string(currentPositionOfFileIndex));
 				int startIndex = currentRC.ws_row-MAXIMUMROWNUMBER+currentPositionOfFileIndex;
 				int endingIndex = startIndex + (MAXIMUMROWNUMBER-STARTTINGROWDATA+1);
 				int lastIndexOfFile = GetSetLastIndexOfFileList(0,0);
-
+				writeToFile("File " + to_string(startIndex)+" : "+to_string(endingIndex)
+					+" Last Index Of File  "+to_string(lastIndexOfFile)
+					+ " Index of Array " + to_string(rowI-STARTTINGROWDATA+startIndex-1));
+				//currentRC.ws_row--;
 				/*if(endingIndex>=lastIndexOfFile)
 				{
 					writeToFile("No Scrolling is Needed because max reached");
@@ -593,7 +611,7 @@ void CursorFunctionality()
 				else*/
 				if(!(endingIndex>=lastIndexOfFile))
 				{
-					currentRC.ws_row++;
+					//currentRC.ws_row++;
 					//writeToFile("File " + to_string(startIndex)+" : "+to_string(endingIndex)
 					//+" Last Index Of File  "+to_string(lastIndexOfFile));
 					redraw(1,startIndex,endingIndex,1);
@@ -606,10 +624,13 @@ void CursorFunctionality()
 			}
         }
 		if ( ch == '\n') {
-			printAtLast(to_string(currentRC.ws_row) + " NM : " + to_string(currentRC.ws_col),1);
-			GoToNextDirectory(rowI-STARTTINGROWDATA);
+			//printAtLast(to_string(currentRC.ws_row) + " NM : " + to_string(currentRC.ws_col),1);
+			//GoToNextDirectory(rowI-STARTTINGROWDATA);
 			//currentRC.ws_col = cursorleft;
 			SetCursor(rowI,colI);
+			printAtLast(to_string(currentRC.ws_row) + " NM : " + to_string(currentRC.ws_col)
+			+ " Index of Array " + to_string(rowI-STARTTINGROWDATA) + " file List Size() "+
+			to_string(fileList.size()),1);
 		}
 		if ( ch == ':') {
 			isNormalMode = 0;
@@ -629,8 +650,8 @@ void CursorFunctionality()
 			printf ( "\033[2J");
 			//tcsetattr( STDIN, TCSANOW, &oldattr );
 			terminal_done();
-			return;
-			//exit(0);
+			//return;
+			exit(0);
     }
 	// Command Mode Region
 	//ch = getchar();
@@ -697,67 +718,6 @@ void CursorFunctionality()
 	terminal_done();
 }
 
-void GetCommandLine(string str)
-{
-			SetCursor(size.ws_row-3,2);
-			bool isEscPressed = false,isEnterPressed = false;			
-			do {
-				int columnNumber =2;
-			SetCursor(size.ws_row-3,columnNumber);
-			printf(":");	
-			columnNumber++;
-			//SetCursor(size.ws_row-3,2);
-			string str = "";
-  			char ch;
-  			while ((ch = getchar())) {
-				 //writeToFile(to_string(ch));
-				if(ch == 10)
-				{
-					isEnterPressed = true;
-					break;
-				}
-				else if(ch == 27)
-			  	{
-					isEscPressed = true;
-				/*	columnNumber -= 2;
-					SetCursor(size.ws_row-3,columnNumber);
-					printf(" "); printf(" ");	
-				*/	
-					break;
-				}
-			/*	else if( ch == ARROWLEFT || ch == ARROWRIGHT || ch == ARROWDOWN || ch == ARROWUP )
-				{
-					writeToFile(" L R U D 7 ");
-					columnNumber -= 3;
-					SetCursor(size.ws_row-3,columnNumber);
-					printf(" "); printf(" "); printf(" ");		
-				}
-				*/
-				else if(isalpha(ch) || isblank(ch))
-				{
-					str += ch;
-					columnNumber++;
-			  	}
-  			}
-			  if(isEscPressed == true)
-			  {
-				isNormalMode = 1;
-				//tcsetattr( STDIN, TCSANOW, &newattr);
-				terminal_init();
-			  	break;
-			  }
-			  if(isEnterPressed == true)
-			  {
-				SetCursor(size.ws_row-3,2);
-				for(int i=0;i<size.ws_col;i++){ printf(" "); }
-				SetCursor(size.ws_row-3,2);				
-			  }
-			  writeToFile(str);
-
-			  invokeCommands(str);
-
-			}while(true);
-}
 
 char * GetPreviousDirectoryPath()
 {
@@ -785,6 +745,21 @@ void GoToNextDirectory(int index)
 		if(isFile(deptr))
 		{
 			printAtLast("It is File So need to Open in Application",1);
+
+			
+
+			char filePath[512];
+			strcpy(filePath,"xdg-open ");
+			strcat(filePath,deptr->d_name);
+			system(filePath);
+			//system("xdg-open http://www.google.com"); 
+			writeToFile(string(filePath));
+/*
+			char arr[100];
+			strcpy(arr,"xdg-open ");
+			strcat(arr,av[1]);
+			system(arr);
+*/
 		}
 		else
 		{
@@ -875,9 +850,28 @@ int EnableDownScrolling()
 
 int invokeCommands(string strCommand)
 {
-	executeCommands(strCommand);
-	return 0;
+	int i=executeCommands(strCommand);
+	// To Clear If Anyhting Written 
+	printAtLast("",1);
+	if(i==0)
+		writeToFile("SucessRename");
+	else if(i==-11)
+		printAtLast("Problem in Parameters",1);
+	else if(i==110)
+		{
+			writeToFile("Redarwing on Success ");
+			isNormalMode = 1;
+			redraw(1,0,MAXIMUMROWNUMBER-STARTTINGROWDATA+1,0);
+			isNormalMode = 0;
+		}
+		else if(i==-12)
+		{
+			writeToFile("Invalid Command Name");
+			//printAtLast("Invalid Command",1);
+			//SetCursor(currentRC.ws_row-3,55);
+		}
 
+	return 0;
 }
 
 /*
@@ -893,4 +887,69 @@ int executeCommands(string strCommand){
     return 0;
 }
 */
+
+void GetCommandLine(string str)
+{
+	
+			writeToFile("to_string(ch)");
+			SetCursor(size.ws_row-2,2);
+			bool isEscPressed = false,isEnterPressed = false;			
+			do {
+				int columnNumber =2;
+			SetCursor(size.ws_row-2,columnNumber);
+			printf(":");	
+			columnNumber++;
+			//SetCursor(size.ws_row-3,2);
+			string str = "";
+  			char ch;
+  			while ((ch = getchar())) {
+				 //writeToFile(to_string(ch));
+				if(ch == 10)
+				{
+					isEnterPressed = true;
+					break;
+				}
+				else if(ch == 27)
+			  	{
+					isEscPressed = true;
+				/*	columnNumber -= 2;
+					SetCursor(size.ws_row-3,columnNumber);
+					printf(" "); printf(" ");	
+				*/	
+					break;
+				}
+			/*	else if( ch == ARROWLEFT || ch == ARROWRIGHT || ch == ARROWDOWN || ch == ARROWUP )
+				{
+					writeToFile(" L R U D 7 ");
+					columnNumber -= 3;
+					SetCursor(size.ws_row-3,columnNumber);
+					printf(" "); printf(" "); printf(" ");		
+				}
+				*/
+				else if(isalpha(ch) || isblank(ch) || isdigit(ch) || ch == '_' || ch == '.' || ch == '/')
+				{
+					str += ch;
+					columnNumber++;
+			  	}
+  			}
+			  if(isEscPressed == true)
+			  {
+				isNormalMode = 1;
+				//tcsetattr( STDIN, TCSANOW, &newattr);
+				terminal_init();
+			  	break;
+			  }
+			  if(isEnterPressed == true)
+			  {
+				SetCursor(size.ws_row-2,2);
+				for(int i=0;i<size.ws_col;i++){ printf(" "); }
+				SetCursor(size.ws_row-2,2);				
+			  }
+			  writeToFile(str);
+
+			  invokeCommands(str);
+
+			}while(true);
+}
+
 
