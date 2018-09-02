@@ -1,0 +1,49 @@
+:41 2018
+(7,1) : to_string(ch)
+Sun Sep  2 13:49:04 2018
+(7,1) : snapshot /home/nitish/IIITH 13.txt
+Sun Sep  2 13:49:04 2018
+(7,1) : SucessRename
+Sun Sep  2 13:51:17 2018
+(7,1) : snapshot /home/nitish/IIITH/Semester 1/FileExplorer/T2 T2SnapShot.txt
+Sun Sep  2 13:51:17 2018
+(7,1) : SucessRename
+Sun Sep  2 13:54:57 2018
+(7,1) : snapshot /home/nitish/IIITH/Semester 1/FileExplorer/copyme copymeSS.txt
+Sun Sep  2 13:54:57 2018
+(7,1) : SucessRename
+Sun Sep  2 13:56:53 2018
+(7,1) : to_string(ch)
+Sun Sep  2 13:58:04 2018
+(7,1) : snapshot /home/nitish/IIITH abcdef.txt
+Sun Sep  2 13:58:04 2018
+(7,1) : SucessRename
+Sun Sep  2 13:59:39 2018
+(7,1) : /home/nitish/IIITH/copyme/inside_file InsideFileSnapShot.txt
+Sun Sep  2 13:59:39 2018
+(7,1) : Invalid Command Name
+Sun Sep  2 14:02:22 2018
+(7,1) : snapshot /home/nitish wwwww.txt
+Sun Sep  2 14:02:22 2018
+(7,1) : SucessRename
+Sun Sep  2 14:07:04 2018
+(7,1) : to_string(ch)
+Sun Sep  2 14:07:25 2018
+(7,1) : snapshot /home/nitish qqww.txt
+Sun Sep  2 14:07:25 2018
+(7,1) : SucessRename
+Sun Sep  2 14:13:21 2018
+(7,1) : snasphot /home/nitish 1234.txt
+Sun Sep  2 14:13:21 2018
+(7,1) : Invalid Command Name
+Sun Sep  2 14:14:23 2018
+(7,1) : snapshot /home/nitish/IIITH snapshh.txt
+Sun Sep  2 14:14:23 2018
+(7,1) : SucessRename
+Sun Sep  2 14:17:36 2018
+(7,1) : to_string(ch)
+Sun Sep  2 14:18:08 2018
+(7,1) : copy test.txt ./T2/2
+test.txt ./T2/2
+test.txt ./TSun Sep  2 14:18:08 2018
+(7,1) : SucessRename

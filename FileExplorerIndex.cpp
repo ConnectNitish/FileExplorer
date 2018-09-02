@@ -237,8 +237,8 @@ string PrintTime()
 	return strDateTime;
 }
 
+///////////////////////////////////// TO REMOVE
 ofstream myfile;
-
 void writeToFile(string message)
 {
   	myfile.open("test.txt", std::ios_base::app);
@@ -252,6 +252,7 @@ void writeToFile(string message)
   	myfile << strFinalLog << " : " << message << endl;
   	myfile.close();
 }
+///////////////////////////////////// END REMOVE
 
 void SetHeaderPath(char * currDir)
 {
@@ -850,12 +851,15 @@ int EnableDownScrolling()
 
 int invokeCommands(string strCommand)
 {
+	// Added this Line Of Code For Changing Directory Logically 
+	chdir(currDir);
+
 
 	char cwd[256];
 	if (getcwd(cwd, sizeof(cwd)) == NULL)
      		 perror("getcwd() error");
-        else
-      		printf("current working directory is: %s\n", cwd);
+    //    else
+    //  		printf("current working directory is: %s\n", cwd);
 
 	int i=executeCommands(strCommand,currDir);
 	// To Clear If Anyhting Written 

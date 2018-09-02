@@ -1,0 +1,11 @@
+me/nitish
+
+.ssh	.bash_history	Downloads	test.txt	.cache	.pki	snap	logs.txt	Untitled Document 1	.thunderbird	nitish.pdf.ps	.ICEauthority	Public	Pictures	Created	NItish Resume.pdf	.mozilla	examples.desktop	Videos	.gconf	Nitish.pdf	Desktop	Created By Vikram	a.out	.gitconfig	.gnome	Music	Documents	.bash_logout	Gaitonde.txt	Templates	.sudo_as_admin_successful	.bashrc	.profile	IIITH	mozilla.pdf	N2	.gnupg	.vscode	.atom	Nitish	.local	.config	
+
+Directory: .vscode
+
+settings.json	
+
+settings.json	
+
+sett

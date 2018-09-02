@@ -5,6 +5,7 @@
 #include "MakeLogs.h"
 #include "Delete.h"
 #include "Copy.h"
+#include "SnapShot.h"
 
 //#include "CreateNewFile.h"
 
@@ -41,6 +42,8 @@ int exeCreateDirectoryCommand();
 int xdiraccess1(const char *path);
 int exeDeleteDirectoryCommand();
 int exeCopyCommand(char * currDir);
+int exeSnapShotCommand(char * currDir);
+
 
 //-11 While Taking Params 
 //-10 Rights Issues
@@ -68,13 +71,17 @@ int execCommand(string commandType,char * currDir)
     {
         Status = exeCreateDirectoryCommand();
     }
-    else if (commandType == "delete_file")
+    else if (commandType == "delete_file" || commandType == "delete_dir")
     {
         Status = exeDeleteDirectoryCommand();
     } 
     else if (commandType == "copy")
     {
         Status = exeCopyCommand(currDir);
+    }
+    else if (commandType == "snapshot")
+    {
+        Status = exeSnapShotCommand(currDir);
     } 
     else
     {
@@ -256,27 +263,24 @@ int exeCopyCommand(char * currDir)
         params.push_back(GetCharPointerFromString(_CMDContent[i]));
     }
 
-    preparePathAndExecuteCopy(params.size(),params,currDir);
+    int sucess = preparePathAndExecuteCopy(params.size(),params,currDir);
 
-    /*
-    string strDirectory = _CMDContent[_CMDContent.size()-1];
-
-    if(strDirectory=="")
-        return PARAMISSUES;
-    
-    for(int i=0;i<(int)_CMDContent.size();i++)
-        writeLogs(_CMDContent[i]);
-
-    char * directory = GetCharPointerFromString(strDirectory);
-    int success;
-    for(int i=1;i<(int)_CMDContent.size()-1;i++)
-    {
-        success = CreateDirectory(GetCharPointerFromString(_CMDContent[i]),directory);
-    }
-    return success;
-    */
    return 0;
 }
+
+int exeSnapShotCommand(char * currDir)
+{
+    writeLogs("EXECUTING SNAPSHOT");
+
+    string strParam1 = _CMDContent[1];
+    string strParam2 = _CMDContent[2];
+    const char * chrParam1 = GetCharPointerFromString(strParam1);
+    const char * chrParam2 = GetCharPointerFromString(strParam2); 
+    int sucess = runSnapShot(chrParam1,chrParam2,currDir);
+
+   return 0;
+}
+
 
 
 #endif

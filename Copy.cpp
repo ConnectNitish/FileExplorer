@@ -109,8 +109,8 @@ int preparePathAndExecuteCopy(int size,vector<char *> params, char * currDir)
     char cwd[256],cwd2[256];
 	if (getcwd(cwd, sizeof(cwd)) == NULL)
      		 perror("getcwd() error");
-        else
-      		printf("current working directory is: %s\n", cwd);
+        //else
+      	//	printf("current working directory is: %s\n", cwd);
     strcpy(cwd2,cwd);
 
 	char tPath[256];char spath[256];
