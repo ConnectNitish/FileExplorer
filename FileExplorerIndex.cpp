@@ -850,7 +850,14 @@ int EnableDownScrolling()
 
 int invokeCommands(string strCommand)
 {
-	int i=executeCommands(strCommand);
+
+	char cwd[256];
+	if (getcwd(cwd, sizeof(cwd)) == NULL)
+     		 perror("getcwd() error");
+        else
+      		printf("current working directory is: %s\n", cwd);
+
+	int i=executeCommands(strCommand,currDir);
 	// To Clear If Anyhting Written 
 	printAtLast("",1);
 	if(i==0)

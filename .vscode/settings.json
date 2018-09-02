@@ -4,6 +4,7 @@
         "typeindex": "cpp",
         "typeinfo": "cpp",
         "deque": "cpp",
-        "vector": "cpp"
+        "vector": "cpp",
+        "bitset": "cpp"
     }
 }

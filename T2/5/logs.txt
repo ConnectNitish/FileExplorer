@@ -1,0 +1,8 @@
+ Delete File :after copying going to cur directory 
+ Delete File :Curent 
+ Delete File :/home/nitish/IIITH/Semester 1/FileExplorer/T2
+ Delete File :Start
+ Delete File :copy
+ Delete File :3
+ Delete File :./5
+ Delete File :END

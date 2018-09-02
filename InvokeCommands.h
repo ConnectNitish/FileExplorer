@@ -4,6 +4,7 @@
 #include "RenameFile.h"
 #include "MakeLogs.h"
 #include "Delete.h"
+#include "Copy.h"
 
 //#include "CreateNewFile.h"
 
@@ -39,6 +40,7 @@ int exeCreateFileCommand();
 int exeCreateDirectoryCommand();
 int xdiraccess1(const char *path);
 int exeDeleteDirectoryCommand();
+int exeCopyCommand(char * currDir);
 
 //-11 While Taking Params 
 //-10 Rights Issues
@@ -51,7 +53,7 @@ char * GetCharPointerFromString(string param1)
     return _CPointer;
 }
 
-int execCommand(string commandType)
+int execCommand(string commandType,char * currDir)
 {
     int Status=0;
     if (commandType == "rename")
@@ -72,7 +74,7 @@ int execCommand(string commandType)
     } 
     else if (commandType == "copy")
     {
-        Status = exeDeleteDirectoryCommand();
+        Status = exeCopyCommand(currDir);
     } 
     else
     {
@@ -81,13 +83,13 @@ int execCommand(string commandType)
     return Status;
 }
 
-int executeCommands(string strCommand)
+int executeCommands(string strCommand,char * currDir)
 {    
     string commandType;    
     _CMDContent.clear();
 	split(strCommand,_CMDContent,SPACEDELIMETER);
     commandType = _CMDContent[0];  
-    return execCommand(commandType);
+    return execCommand(commandType,currDir);
     //return 0;
 }
 
@@ -242,8 +244,38 @@ int exeDeleteDirectoryCommand()
     int returnStatus = removedirectory(paramCharArray);
     writeLogs(" Return Status From  "+to_string(returnStatus));
     
-    return 0;
+    return returnStatus;
+}
 
+int exeCopyCommand(char * currDir)
+{
+    vector<char *> params;
+
+    for(int i=0;i<(int)_CMDContent.size();i++)
+    {
+        params.push_back(GetCharPointerFromString(_CMDContent[i]));
+    }
+
+    preparePathAndExecuteCopy(params.size(),params,currDir);
+
+    /*
+    string strDirectory = _CMDContent[_CMDContent.size()-1];
+
+    if(strDirectory=="")
+        return PARAMISSUES;
+    
+    for(int i=0;i<(int)_CMDContent.size();i++)
+        writeLogs(_CMDContent[i]);
+
+    char * directory = GetCharPointerFromString(strDirectory);
+    int success;
+    for(int i=1;i<(int)_CMDContent.size()-1;i++)
+    {
+        success = CreateDirectory(GetCharPointerFromString(_CMDContent[i]),directory);
+    }
+    return success;
+    */
+   return 0;
 }
 
 

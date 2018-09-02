@@ -1,0 +1,124 @@
+ Delete File :before copying going to cur directory 0
+ Delete File :before copying going to cur directory 0
+ Delete File :at start seasrch dir with spath as
+ Delete File :3
+ Delete File :at start seasrch dir with tpath as
+ Delete File ://home/nitish/IIITH/Semester 1/FileExplorer/T2/5
+ Delete File :at start seasrch dir with cwd as
+ Delete File :/home/nitish/IIITH/Semester 1/FileExplorer/T2
+ Delete File :considering aas a directory
+ Delete File :at start seasrch dir with spath as
+ Delete File :3/2
+ Delete File :at start seasrch dir with tpath as
+ Delete File ://home/nitish/IIITH/Semester 1/FileExplorer/T2/5
+ Delete File :at start seasrch dir with cwd as
+ Delete File :/home/nitish/IIITH/Semester 1/FileExplorer/T2
+ Delete File :considering aas a directory
+ Delete File :at start seasrch dir with spath as
+ Delete File :3/4
+ Delete File :at start seasrch dir with tpath as
+ Delete File ://home/nitish/IIITH/Semester 1/FileExplorer/T2/5
+ Delete File :at start seasrch dir with cwd as
+ Delete File :/home/nitish/IIITH/Semester 1/FileExplorer/T2
+ Delete File :considering aas a directory
+ Delete File :after copying going to cur directory 
+ Delete File :Curent 
+ Delete File :/home/nitish/IIITH/Semester 1/FileExplorer/T2
+ Delete File :Start
+ Delete File :copy
+ Delete File :2
+ Delete File :./5
+ Delete File :END
+ Delete File :before copying going to cur directory 0
+ Delete File :at start seasrch dir with spath as
+ Delete File :2
+ Delete File :at start seasrch dir with tpath as
+ Delete File ://home/nitish/IIITH/Semester 1/FileExplorer/T2/5
+ Delete File :at start seasrch dir with cwd as
+ Delete File :/home/nitish/IIITH/Semester 1/FileExplorer/T2
+ Delete File :considering aas a directory
+ Delete File :at start seasrch dir with spath as
+ Delete File :2/3
+ Delete File :at start seasrch dir with tpath as
+ Delete File ://home/nitish/IIITH/Semester 1/FileExplorer/T2/5
+ Delete File :at start seasrch dir with cwd as
+ Delete File :/home/nitish/IIITH/Semester 1/FileExplorer/T2
+ Delete File :considering aas a directory
+ Delete File :at start seasrch dir with spath as
+ Delete File :2/3/2
+ Delete File :at start seasrch dir with tpath as
+ Delete File ://home/nitish/IIITH/Semester 1/FileExplorer/T2/5
+ Delete File :at start seasrch dir with cwd as
+ Delete File :/home/nitish/IIITH/Semester 1/FileExplorer/T2
+ Delete File :considering aas a directory
+ Delete File :at start seasrch dir with spath as
+ Delete File :2/3/2/3
+ Delete File :at start seasrch dir with tpath as
+ Delete File ://home/nitish/IIITH/Semester 1/FileExplorer/T2/5
+ Delete File :at start seasrch dir with cwd as
+ Delete File :/home/nitish/IIITH/Semester 1/FileExplorer/T2
+ Delete File :considering aas a directory
+ Delete File :at start seasrch dir with spath as
+ Delete File :2/3/2/3/2
+ Delete File :at start seasrch dir with tpath as
+ Delete File ://home/nitish/IIITH/Semester 1/FileExplorer/T2/5
+ Delete File :at start seasrch dir with cwd as
+ Delete File :/home/nitish/IIITH/Semester 1/FileExplorer/T2
+ Delete File :considering aas a directory
+ Delete File :at start seasrch dir with spath as
+ Delete File :2/3/2/3/4
+ Delete File :at start seasrch dir with tpath as
+ Delete File ://home/nitish/IIITH/Semester 1/FileExplorer/T2/5
+ Delete File :at start seasrch dir with cwd as
+ Delete File :/home/nitish/IIITH/Semester 1/FileExplorer/T2
+ Delete File :considering aas a directory
+ Delete File :at start seasrch dir with spath as
+ Delete File :2/3/4
+ Delete File :at start seasrch dir with tpath as
+ Delete File ://home/nitish/IIITH/Semester 1/FileExplorer/T2/5
+ Delete File :at start seasrch dir with cwd as
+ Delete File :/home/nitish/IIITH/Semester 1/FileExplorer/T2
+ Delete File :considering aas a directory
+ Delete File :at start seasrch dir with spath as
+ Delete File :2/3/4/3
+ Delete File :at start seasrch dir with tpath as
+ Delete File ://home/nitish/IIITH/Semester 1/FileExplorer/T2/5
+ Delete File :at start seasrch dir with cwd as
+ Delete File :/home/nitish/IIITH/Semester 1/FileExplorer/T2
+ Delete File :considering aas a directory
+ Delete File :at start seasrch dir with spath as
+ Delete File :2/3/4/3/2
+ Delete File :at start seasrch dir with tpath as
+ Delete File ://home/nitish/IIITH/Semester 1/FileExplorer/T2/5
+ Delete File :at start seasrch dir with cwd as
+ Delete File :/home/nitish/IIITH/Semester 1/FileExplorer/T2
+ Delete File :considering aas a directory
+ Delete File :at start seasrch dir with spath as
+ Delete File :2/3/4/3/4
+ Delete File :at start seasrch dir with tpath as
+ Delete File ://home/nitish/IIITH/Semester 1/FileExplorer/T2/5
+ Delete File :at start seasrch dir with cwd as
+ Delete File :/home/nitish/IIITH/Semester 1/FileExplorer/T2
+ Delete File :considering aas a directory
+ Delete File :at start seasrch dir with spath as
+ Delete File :2/3/3
+ Delete File :at start seasrch dir with tpath as
+ Delete File ://home/nitish/IIITH/Semester 1/FileExplorer/T2/5
+ Delete File :at start seasrch dir with cwd as
+ Delete File :/home/nitish/IIITH/Semester 1/FileExplorer/T2
+ Delete File :considering aas a directory
+ Delete File :at start seasrch dir with spath as
+ Delete File :2/3/3/2
+ Delete File :at start seasrch dir with tpath as
+ Delete File ://home/nitish/IIITH/Semester 1/FileExplorer/T2/5
+ Delete File :at start seasrch dir with cwd as
+ Delete File :/home/nitish/IIITH/Semester 1/FileExplorer/T2
+ Delete File :considering aas a directory
+ Delete File :at start seasrch dir with spath as
+ Delete File :2/3/3/4
+ Delete File :at start seasrch dir with tpath as
+ Delete File ://home/nitish/IIITH/Semester 1/FileExplorer/T2/5
+ Delete File :at start seasrch dir with cwd as
+ Delete File :/home/nitish/IIITH/Semester 1/FileExplorer/T2
+ Delete File :considering aas a directory
+ Delete File :after copying going to cur directory 

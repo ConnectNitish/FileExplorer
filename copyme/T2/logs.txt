@@ -1,4 +1,4 @@
- Delete File :Curent 
+rent 
  Delete File :/home/nitish/IIITH/Semester 1/FileExplorer
  Delete File :Start
  Delete File :copy
@@ -1274,19 +1274,5 @@
  Delete File :at start seasrch dir with cwd as
  Delete File :/home/nitish/IIITH/Semester 1/FileExplorer
  Delete File :considering aas a file
- Delete File :Curent 
- Delete File :/home/nitish/IIITH/Semester 1/FileExplorer/T2
- Delete File :Start
- Delete File :copy
- Delete File :test.txt
- Delete File :logs.txt
- Delete File :./5
- Delete File :END
- Delete File :Curent 
- Delete File :/home/nitish/IIITH/Semester 1/FileExplorer/T2
- Delete File :Start
- Delete File :copy
- Delete File :test.txt
- Delete File :2.txt
- Delete File :./5
- Delete File :END
+ring aas a file
+ri Delete File :after copying going to cur directory 
