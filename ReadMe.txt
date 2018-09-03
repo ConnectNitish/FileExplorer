@@ -1,24 +1,14 @@
 Guideline To Use FileExplorer  (FE)
 ------------------------------------------------------------------------
+Git Hub Repository :  https://github.com/ConnectNitish/FileExplorer.git
+------------------------------------------------------------------------
 File Name : makeFile 
 ------------------------------
-
 a) Dependencies are displayed in makeFile.
 b) Program can be "make run" or "./FileExplorerIndex"
-
 ------------------------------------------------------------------------
-
-Assumptions : 
-
-a) Please open the terminal in full screen mode before launching application to give proper layout.
-b) Max File Entries displayed will be 26 items.
-c) For Command Mode , all the command will be written at last 3rd row from bottom.
-d) Any Error or informative message while accessing the application will be displayed at bottom left of  the screen.
-e) By Default the Focus of the cursor will be set on first entry of the directory.
-f) Scroll will happen increamental.  
-------------------------------------------------------------------------
-Functionalities Implemented : 
-
+Functionalities Implemented : (Index are Provided based on Indexes present in assignment document) 
+----------------------------------------
 Normal Mode : 
 
 1. a) List Of Files and Directories is being Displayed as per details shared in assignment. 
@@ -75,6 +65,28 @@ Currently on press of "Esc+Entry" user will be able to navigate from Command Mod
 	Provided that user rsunning the application has right to create the file in directory.
 	Ex. 	snapshot . abc.txt 																		(snapshot of current directory will be created in file named abc.txt)
 			snapshot /home/abcd abc.txt 													(snapshot of directory specified as second argument will be created in file named abc.txt)
-	
-	
+7. On press of "Esc+Enter" , user will be able to navigate to Normal Mode.	
+
+------------------------------------------------------------------------
+Assumptions : 
+
+a) Please open the terminal in full screen mode before launching application to give proper layout.
+b) Max File Entries displayed will be 26 items.
+c) For Command Mode , all the command will be written at last 3rd row from bottom.
+d) Any Error or informative message while accessing the application will be displayed at bottom left of  the screen.
+e) By Default the Focus of the cursor will be set on first entry of the directory.
+f) Scroll will happen increamental.  
+g) Commands only accepts proper inputs with alphabets  and certain special character like Period (".") , Underscore("_") , backslash ("/"). 
+h) File Name max will be 25 character. 
+
+------------------------------------------------------------------------
+Others :
+
+a) On press of "q" or "Q" , if user is in Normal Mode , application will stop and set focus to terminal.
+b) If any informative message is displayed on screen then it will get vanish on next directory change.
+c) As an when a command execution is completed , old command will vanish out and focus will be set on for typing next new command.
+
+------------------------------------------------------------------------
+
+Nitish Srivastava ( 2018201012	)
 	

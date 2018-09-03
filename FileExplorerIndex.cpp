@@ -894,7 +894,7 @@ int invokeCommands(string strCommand)
 		else if(i==-12)
 		{
 			//writeToFile("Invalid Command Name");
-			printAtLast("Invalid Command",1);
+			//printAtLast("Invalid Command",1);
 			//SetCursor(currentRC.ws_row-3,55);
 		}
 

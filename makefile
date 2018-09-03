@@ -8,7 +8,7 @@ RM=/bin/rm -f
 
 all:main
 
-main.o:	InvokeCommands.h FileExplorerIndex.cpp
+main.o:	InvokeCommands.h RenameFile.h FileExplorerIndex.cpp
 	@$(C) $(FLAGS) FileExplorerIndex.cpp 
 
 others.o: Copy.h SnapShot.h Copy.cpp SnapShot.cpp 

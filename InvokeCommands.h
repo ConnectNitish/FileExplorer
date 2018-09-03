@@ -119,8 +119,8 @@ int exeRenameCommand()
     char *old = GetCharPointerFromString(param1);
     char *newnm = GetCharPointerFromString(param2);
 
-    writeLogs(param1);
-    writeLogs(param2);
+    //writeLogs(param1);
+    //writeLogs(param2);
 	renameFiles(old,newnm);
     return 0;
 }
@@ -176,8 +176,8 @@ int exeCreateDirectoryCommand()
     if(strDirectory=="")
         return PARAMISSUES;
     
-    for(int i=0;i<(int)_CMDContent.size();i++)
-        writeLogs(_CMDContent[i]);
+   // for(int i=0;i<(int)_CMDContent.size();i++)
+   //     writeLogs(_CMDContent[i]);
 
     char * directory = GetCharPointerFromString(strDirectory);
     int success;
@@ -254,9 +254,9 @@ int exeDeleteDirectoryCommand()
     char paramCharArray[length_string+1]; 
     strcpy(paramCharArray, param1.c_str()); 
      
-    writeLogs("Calling Delete Dir ");
+   // writeLogs("Calling Delete Dir ");
     int returnStatus = removedirectory(paramCharArray);
-    writeLogs(" Return Status From  "+to_string(returnStatus));
+  //  writeLogs(" Return Status From  "+to_string(returnStatus));
     
     return returnStatus;
 }
@@ -278,7 +278,7 @@ int exeCopyCommand(char * currDir)
 
 int exeSnapShotCommand(char * currDir)
 {
-    writeLogs("EXECUTING SNAPSHOT");
+  //  writeLogs("EXECUTING SNAPSHOT");
 
     string strParam1 = _CMDContent[1];
     string strParam2 = _CMDContent[2];
