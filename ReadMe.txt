@@ -55,7 +55,7 @@ Currently on press of "Esc+Entry" user will be able to navigate from Command Mod
 		rename will work for single file as well as directory.
 		Ex : rename old_name new_name 						(assuming the file or directory exist in current folder).
 	c) Directory Copy implementation is also done (explained in above Point ).
-	d) ??? Permission are full permission given to folders.
+	d) Permission are full permission given to folders.
 2. a) create_file will create single as well as multiple file ; provided directory has rights in the folder where is it creating.
 	Ex.  create_file newFile.txt newFile2.txt ./abcd  								( abcd is folder inside the current directory )
 			create_file newFile.txt newFile2.txt /home/abcd						( /home/abcd will be full qualified path)
