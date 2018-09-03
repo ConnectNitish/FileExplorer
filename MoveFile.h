@@ -1,0 +1,1 @@
+int executeMoveCommand(int ac,char *av[],char * currDir);

@@ -6,6 +6,7 @@
 #include "Delete.h"
 #include "Copy.h"
 #include "SnapShot.h"
+#include "MoveFile.h"
 
 //#include "CreateNewFile.h"
 
@@ -43,6 +44,8 @@ int xdiraccess1(const char *path);
 int exeDeleteDirectoryCommand();
 int exeCopyCommand(char * currDir);
 int exeSnapShotCommand(char * currDir);
+int exeMoveFileCommand(char * currDir);
+
 
 
 //-11 While Taking Params 
@@ -82,6 +85,10 @@ int execCommand(string commandType,char * currDir)
     else if (commandType == "snapshot")
     {
         Status = exeSnapShotCommand(currDir);
+    } 
+    else if (commandType == "move")
+    {
+        Status = exeMoveFileCommand(currDir);
     } 
     else
     {
@@ -256,14 +263,15 @@ int exeDeleteDirectoryCommand()
 
 int exeCopyCommand(char * currDir)
 {
-    vector<char *> params;
-
+    char *arrayOfParameters[100];
     for(int i=0;i<(int)_CMDContent.size();i++)
     {
-        params.push_back(GetCharPointerFromString(_CMDContent[i]));
+        char * params = GetCharPointerFromString(_CMDContent[i]);
+        //printf("SSSSSSSSSSSSSS %s /n",params);
+        arrayOfParameters[i] = params;
     }
 
-    int sucess = preparePathAndExecuteCopy(params.size(),params,currDir);
+    int sucess = executeCopyCommand((int)_CMDContent.size(),arrayOfParameters,currDir);
 
    return 0;
 }
@@ -279,6 +287,19 @@ int exeSnapShotCommand(char * currDir)
     int sucess = runSnapShot(chrParam1,chrParam2,currDir);
 
    return 0;
+}
+
+int exeMoveFileCommand(char * currDir)
+{
+    char *arrayOfParameters[100];
+    for(int i=0;i<(int)_CMDContent.size();i++)
+    {
+        char * params = GetCharPointerFromString(_CMDContent[i]);
+        arrayOfParameters[i] = params;
+    }
+
+    int returnValue = executeMoveCommand((int)_CMDContent.size(),arrayOfParameters,currDir);
+    return 0;
 }
 
 

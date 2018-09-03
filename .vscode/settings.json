@@ -5,6 +5,7 @@
         "typeinfo": "cpp",
         "deque": "cpp",
         "vector": "cpp",
-        "bitset": "cpp"
+        "bitset": "cpp",
+        "*.tcc": "cpp"
     }
 }

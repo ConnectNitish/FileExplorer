@@ -1,5 +1,3 @@
-/* See LICENSE file for copyright and license details. */
-
 #include "InvokeCommands.h"
 
 #define CONTROL(c) ((c) ^ 0x40)
@@ -60,4 +58,3 @@ struct assoc {
 	char *regex; /* Regex to match on filename */
 	char *mime;  /* File type */
 };
-

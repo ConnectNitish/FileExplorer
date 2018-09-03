@@ -295,18 +295,27 @@ void SetWelcomeScreen()
 
 void SetParentPath(char * currDir)
 {
-	if(currDir!=NULL)
+	if(currDir!=NULL && navigationVector.size()>1)
 	{
 		string s1;
 		s1.append(currDir);
 		int location = s1.find_last_of("\\/");
 		if(location>0)
 		{
-		s1 = s1.substr(0, location);
-		s1.append("/");
+		s1 = s1.substr(0, location-1);
+		if(s1[location-1]!='/')
+		{
+			//printAtLast("hjshhsjhas",1);
+			s1.append("/");
+		}
 		char *cstr = new char[s1.length() + 1];
 		strcpy(cstr, s1.c_str());
-		UpFolderPath = cstr;
+
+		// BackSpace Will be Active Only When more than one item in navigationVector
+			if(navigationVector.size()>1)
+			{
+				UpFolderPath = cstr;
+			}
 		}
 	}
 }
@@ -318,10 +327,11 @@ void printAtLast(string message,int restore)
 	{
 		int rowI = currentRC.ws_row;
 		int colI = currentRC.ws_col;
-		SetCursor(size.ws_row-2,1);
+		SetCursor(size.ws_row-1,1);
 		cout << "																				";
-		SetCursor(size.ws_row-2,1);
-		cout << message;
+		SetCursor(size.ws_row-1,1);
+if(message=="") cout << "																				";
+else	cout << message;
 		SetCursor(rowI,colI);
 		return;
 	}
@@ -330,7 +340,8 @@ void printAtLast(string message,int restore)
 		SetCursor(size.ws_row-2,1);
 		cout << "																				";
 		SetCursor(size.ws_row-2,1);
-		cout << message;
+if(message=="") cout << "																				";
+else	cout << message;
 	}
 }
 
@@ -496,7 +507,7 @@ void redraw(int mainCalling,int startIndex,int endingIndex,int isFromSameSource)
 	SetWelcomeScreen();
 	
 	GetCurrentDirectoryDetails(currDir,startIndex,endingIndex,isFromSameSource);
-	
+	printAtLast("",1);	
 	if(isFromSameSource==0)
 	{
 		ResetCursor();
@@ -534,6 +545,7 @@ void CursorFunctionality()
 	//NormalModeStart : 
 	while ( (((ch = getchar()) != 'q') && (ch!='Q')) && isNormalMode == 1)
 	{
+		printAtLast("",1);
 		int rowI = currentRC.ws_row;
 		int colI = currentRC.ws_col;
 		if ( ch == BACKSPACE)
@@ -594,14 +606,14 @@ void CursorFunctionality()
 				//currentRC.ws_row++;
 				//writeToFile("Scrooling Need to Be Impleented for Down");
 				int currentPositionOfFileIndex = GetSetCurrentIndexOfFileList(0,0);
-				writeToFile("Scrooling Need to Be Impleented for Down row : "+to_string(currentRC.ws_row)+" : current " +
-				to_string(currentPositionOfFileIndex));
+				//writeToFile("Scrooling Need to Be Impleented for Down row : "+to_string(currentRC.ws_row)+" : current " +
+				//to_string(currentPositionOfFileIndex));
 				int startIndex = currentRC.ws_row-MAXIMUMROWNUMBER+currentPositionOfFileIndex;
 				int endingIndex = startIndex + (MAXIMUMROWNUMBER-STARTTINGROWDATA+1);
 				int lastIndexOfFile = GetSetLastIndexOfFileList(0,0);
-				writeToFile("File " + to_string(startIndex)+" : "+to_string(endingIndex)
-					+" Last Index Of File  "+to_string(lastIndexOfFile)
-					+ " Index of Array " + to_string(rowI-STARTTINGROWDATA+startIndex-1));
+				//writeToFile("File " + to_string(startIndex)+" : "+to_string(endingIndex)
+				//	+" Last Index Of File  "+to_string(lastIndexOfFile)
+				//	+ " Index of Array " + to_string(rowI-STARTTINGROWDATA+startIndex-1));
 				//currentRC.ws_row--;
 				/*if(endingIndex>=lastIndexOfFile)
 				{
@@ -626,12 +638,12 @@ void CursorFunctionality()
         }
 		if ( ch == '\n') {
 			//printAtLast(to_string(currentRC.ws_row) + " NM : " + to_string(currentRC.ws_col),1);
-			//GoToNextDirectory(rowI-STARTTINGROWDATA);
+			GoToNextDirectory(rowI-STARTTINGROWDATA+GetSetCurrentIndexOfFileList(0,0));
 			//currentRC.ws_col = cursorleft;
 			SetCursor(rowI,colI);
-			printAtLast(to_string(currentRC.ws_row) + " NM : " + to_string(currentRC.ws_col)
-			+ " Index of Array " + to_string(rowI-STARTTINGROWDATA) + " file List Size() "+
-			to_string(fileList.size()),1);
+			//printAtLast(to_string(currentRC.ws_row) + " NM : " + to_string(currentRC.ws_col)
+			//+ " Index of Array " + to_string(rowI-STARTTINGROWDATA) + " file List Size() "+
+			//to_string(fileList.size()),1);
 		}
 		if ( ch == ':') {
 			isNormalMode = 0;
@@ -724,7 +736,7 @@ char * GetPreviousDirectoryPath()
 {
 	if(navigationVector.size()<=1)
 	{
-		printAtLast("&&&&!!!!!!!",1);
+		printAtLast(" Not Any Previous Directory ",1);
 		return NULL;
 	}
 	else
@@ -745,16 +757,14 @@ void GoToNextDirectory(int index)
 		deptr = fileList[index];
 		if(isFile(deptr))
 		{
-			printAtLast("It is File So need to Open in Application",1);
-
-			
-
+			//printAtLast("It is File So need to Open in Application. Press c to clear",1);
 			char filePath[512];
 			strcpy(filePath,"xdg-open ");
 			strcat(filePath,deptr->d_name);
-			system(filePath);
+			int returnStatus = system(filePath);
+			//if(returnStatus==1) printAtLast(string(filePath),1);
 			//system("xdg-open http://www.google.com"); 
-			writeToFile(string(filePath));
+			//writeToFile(string(filePath));
 /*
 			char arr[100];
 			strcpy(arr,"xdg-open ");
@@ -768,16 +778,21 @@ void GoToNextDirectory(int index)
 			string snamedummy = string(deptr->d_name);
 			if(snamedummy!=".")
 			{
+				// We Can Go Back Only When We have more than one item in navigationVector 
 				if(snamedummy=="..")
 				{
-					snamedummy = string(currDir);
-					size_t found = snamedummy.find_last_of("//");
-					snamedummy = snamedummy.substr(0,found);
-					char *cstr = new char[snamedummy.length() + 1];
-					strcpy(cstr, snamedummy.c_str());
-					snamedummy = string(cstr);	
-					navigationVector.push_back(cstr);
-					redraw(1,0,MAXIMUMROWNUMBER-STARTTINGROWDATA+1,0);		
+					if(navigationVector.size()>1)
+					{
+						snamedummy = string(currDir);
+						size_t found = snamedummy.find_last_of("//");
+						snamedummy = snamedummy.substr(0,found);
+						char *cstr = new char[snamedummy.length() + 1];
+						strcpy(cstr, snamedummy.c_str());
+						snamedummy = string(cstr);	
+						//navigationVector.push_back(cstr);
+						navigationVector.pop_back();
+						redraw(1,0,MAXIMUMROWNUMBER-STARTTINGROWDATA+1,0);
+					}		
 				}
 				else
 				{
@@ -853,7 +868,7 @@ int invokeCommands(string strCommand)
 {
 	// Added this Line Of Code For Changing Directory Logically 
 	chdir(currDir);
-
+	printAtLast("",1);
 
 	char cwd[256];
 	if (getcwd(cwd, sizeof(cwd)) == NULL)
@@ -864,21 +879,22 @@ int invokeCommands(string strCommand)
 	int i=executeCommands(strCommand,currDir);
 	// To Clear If Anyhting Written 
 	printAtLast("",1);
-	if(i==0)
-		writeToFile("SucessRename");
-	else if(i==-11)
+	//if(i==0)
+	//	writeToFile("SucessRename");
+	//else 
+	if(i==-11)
 		printAtLast("Problem in Parameters",1);
 	else if(i==110)
 		{
-			writeToFile("Redarwing on Success ");
+		//	writeToFile("Redarwing on Success ");
 			isNormalMode = 1;
 			redraw(1,0,MAXIMUMROWNUMBER-STARTTINGROWDATA+1,0);
 			isNormalMode = 0;
 		}
 		else if(i==-12)
 		{
-			writeToFile("Invalid Command Name");
-			//printAtLast("Invalid Command",1);
+			//writeToFile("Invalid Command Name");
+			printAtLast("Invalid Command",1);
 			//SetCursor(currentRC.ws_row-3,55);
 		}
 
@@ -902,7 +918,7 @@ int executeCommands(string strCommand){
 void GetCommandLine(string str)
 {
 	
-			writeToFile("to_string(ch)");
+			//writeToFile("to_string(ch)");
 			SetCursor(size.ws_row-2,2);
 			bool isEscPressed = false,isEnterPressed = false;			
 			do {
@@ -956,7 +972,7 @@ void GetCommandLine(string str)
 				for(int i=0;i<size.ws_col;i++){ printf(" "); }
 				SetCursor(size.ws_row-2,2);				
 			  }
-			  writeToFile(str);
+			  //writeToFile(str);
 
 			  invokeCommands(str);
 
